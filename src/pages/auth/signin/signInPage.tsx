@@ -14,9 +14,11 @@ import {
     AuthTitle,
 } from "../../../components/auth/auth.style.tsx";
 import InputGroup from "../../../components/common/input/InputGroup.tsx";
+import { useAuthStore } from "../../../stores/auth/authStore.ts";
 
 function SignInPage() {
     const navigate = useNavigate();
+    const { login } = useAuthStore();
     const {
         register,
         handleSubmit,
@@ -32,6 +34,7 @@ function SignInPage() {
             // SignUp에서는 백엔드가 뭐라고 대답하든 "성공"이면 신경 안써도 됐는데
             // SignIn에서는 백엔드가 "성공" 대답하면서 신분증(token)을 응답함
             const response = await axiosInstance.post("/user/login", data);
+            console.log(response);
             // axios의 응답값인 response는 response.data에 실제 백엔드가 응답한 데이터가 담김
             // user 정보와 token을 뽑아와야 함
             const { user, token } = response.data.data;
@@ -40,7 +43,7 @@ function SignInPage() {
             // 그렇기 때문에 이 token을 어딘가(ContextAPI든, localStorage든)에 저장해서
             // 사용자가 백엔드에 요청을 할 때마다 꺼내서 집어넣고 요청을 해야 함
             localStorage.setItem("accessToken", token);
-
+            login(user, token);
             alert("로그인에 성공했습니다!");
             navigate("/");
         } catch (error) {
@@ -60,7 +63,7 @@ function SignInPage() {
 
             setError("root", { message: errorMessage });
         }
-    }
+    };
 
     return (
         <AuthContainer>
