@@ -6,6 +6,9 @@ import { useThemeStore } from "../../../stores/theme/themeStore.ts";
 import { useAuthStore } from "../../../stores/auth/authStore.ts";
 import Button from "../../common/button/Button.tsx";
 import { Role } from "../../../types/user.type.ts";
+import { useEffect, useState } from "react";
+import type { Category } from "../../../types/category.type.ts";
+import categoryApi from "../../../api/category/categoryApi.ts";
 
 const HeaderContainer = styled.header`
     height: 64px;
@@ -36,6 +39,23 @@ const Logo = styled(Link)`
     color: ${props => props.theme.colors.primary};
 `;
 
+const Nav = styled.nav`
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex: 1;
+    margin-left: 24px;
+`;
+
+const NavItem = styled(Link)`
+    font-size: 16px;
+    font-weight: 600;
+    color: ${props => props.theme.colors.text.default};
+
+    &:hover {
+        color: ${props => props.theme.colors.primary};
+    }
+`;
 const NavGroup = styled.nav`
     display: flex;
     align-items: center;
@@ -46,6 +66,20 @@ function MainHeader() {
     const { theme, onChangeTheme } = useThemeStore();
     const { user, isLoggedIn, logout } = useAuthStore();
 
+    const [list, setList] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const loadList = async () => {
+            try {
+                const data = await categoryApi.fetchCategoryList();
+                setList(data);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        loadList().then(() => {});
+    }, []);
+
     return (
         <HeaderContainer>
             <HeaderInner>
@@ -53,6 +87,13 @@ function MainHeader() {
                     <IoChatbubbles size={28} />
                     <span>토론대난투</span>
                 </Logo>
+                <Nav>
+                    {list.map(item => (
+                        <NavItem key={item.id} to={`/category/${item.id}`}>
+                            {item.name}
+                        </NavItem>
+                    ))}
+                </Nav>
                 <NavGroup>
                     <Button color={"primary"} variant={"icon"} onClick={onChangeTheme}>
                         {theme === "light" ? <IoSunny size={20} /> : <IoMoon size={20} />}
