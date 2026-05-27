@@ -6,7 +6,6 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const api = axios.create({
     baseURL: BASE_URL, // 통신을 진행할 상대의 기본 주소   (필수)
     timeout: 5000, // 통신 요청을 했을 때 실패되었다고 판단하는 타임아웃 시간 (ms 밀리세컨드 단위. 5초)
-    withCredentials: true, // CORS 요청을 허용할지 여부
 });
 
 export default api;
@@ -40,13 +39,7 @@ api.interceptors.request.use(config => {
         // Digest라고 붙으면, MD5 형식으로 암호화한 값이 들어간다는 의미
     }
     return config;
-})
-
-
-
-
-
-
+});
 
 // api.interceptors.response 에는 그렇게 요청한 응답이 도착했을 때
 // 응답을 실제 사용하기 전, 해야할 일에 대해서 api.interceptors.response.use() 에다가

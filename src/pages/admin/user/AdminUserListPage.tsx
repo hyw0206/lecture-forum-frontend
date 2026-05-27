@@ -13,7 +13,7 @@ import {
 import Button from "../../../components/common/button/Button.tsx";
 import Card from "../../../components/common/card/Card.tsx";
 import Badge from "../../../components/common/badge/Badge.tsx";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Role, type User } from "../../../types/user.type.ts";
 import adminUserApi from "../../../api/admin/user/adminUserApi.ts";
 import { FiEdit, FiTrash } from "react-icons/fi";
@@ -22,8 +22,10 @@ function AdminUserListPage() {
     const [list, setList] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = Number(searchParams.get("page")) || 1;
+
     const SIZE = 20;
-    const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const totalPage = Math.ceil(total / SIZE); // Math.ceil() : 올림 메서드
 
@@ -86,7 +88,8 @@ function AdminUserListPage() {
     };
 
     const handlePageChange = (page: number) => {
-        setPage(page);
+        searchParams.set("page", page.toString()); // page property 값 변경
+        setSearchParams(searchParams); // 바꾼 property의 값으로 주소 변경
     };
 
     return (
